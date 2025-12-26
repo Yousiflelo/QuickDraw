@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickDraw: 60-Second Drawing Challenge</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px 0 30px;
+            border-bottom: 2px solid #4cc9f0;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #4cc9f0, #f72585);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #b8c1ec;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+        
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 900px) {
+            .game-area {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .drawing-section {
+            background: rgba(30, 30, 46, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid #2d3047;
+        }
+        
+        .gallery-section {
+            background: rgba(30, 30, 46, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid #2d3047;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #4cc9f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            font-size: 1.3rem;
+        }
+        
+        .timer-container {
+            background: rgba(20, 20, 40, 0.9);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 2px solid #f72585;
+        }
+        
+        .timer {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #f72585;
+            text-shadow: 0 0 10px rgba(247, 37, 133, 0.5);
+            margin: 10px 0;
+        }
+        
+        .timer-label {
+            font-size: 1rem;
+            color: #b8c1ec;
+        }
+        
+        .canvas-container {
+            background: #0f0f1a;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #4361ee;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        #drawingCanvas {
+            display: block;
+            background: #0f0f1a;
+            cursor: crosshair;
+            width: 100%;
+            height: 400px;
+        }
+        
+        .tools {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .color-picker, .brush-size {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        
+        .color-option:hover {
+            transform: scale(1.2);
+        }
+        
+        .color-option.active {
+            border-color: white;
+            transform: scale(1.2);
+        }
+        
+        .brush-size input {
+            width: 150px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, #4361ee, #3a0ca3);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #3a0ca3, #4361ee);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(90deg, #f72585, #b5179e);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(90deg, #b5179e, #f72585);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(247, 37, 133, 0.4);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #4cc9f0;
+            border: 2px solid #4cc9f0;
+        }
+        
+        .btn-outline:hover {
+            background: rgba(76, 201, 240, 0.1);
+            transform: translateY(-3px);
+        }
+        
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .drawing-card {
+            background: rgba(20, 20, 40, 0.9);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s;
+            border: 1px solid #2d3047;
+        }
+        
+        .drawing-card:hover {
+            transform: translateY(-5px);
+            border-color: #4cc9f0;
+        }
+        
+        .drawing-card img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .drawing-info {
+            padding: 12px;
+        }
+        
+        .drawing-date {
+            font-size: 0.8rem;
+            color: #b8c1ec;
+        }
+        
+        .empty-gallery {
+            text-align: center;
+            padding: 40px 20px;
+            color: #b8c1ec;
+            grid-column: 1 / -1;
+        }
+        
+        .empty-gallery i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #4361ee;
+        }
+        
+        .prompt-container {
+            background: rgba(20, 20, 40, 0.9);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 2px solid #7209b7;
+        }
+        
+        .prompt {
+            font-size: 1.3rem;
+            color: #7209b7;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .instructions {
+            background: rgba(20, 20, 40, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .instructions h3 {
+            color: #4cc9f0;
+            margin-bottom: 15px;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+            color: #b8c1ec;
+            line-height: 1.6;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .save-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.5s, opacity 0.5s;
+            z-index: 1000;
+        }
+        
+        .save-notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #2d3047;
+            color: #b8c1ec;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-paint-brush"></i> QuickDraw Challenge</h1>
+            <p class="subtitle">Draw the first thing that comes to your mind in only 60 seconds. Your drawings are automatically saved and can be viewed anytime you open the app.</p>
+        </header>
+        
+        <div class="app-container">
+            <div class="game-area">
+                <div class="drawing-section">
+                    <h2 class="section-title"><i class="fas fa-palette"></i> Drawing Board</h2>
+                    
+                    <div class="prompt-container">
+                        <div class="prompt-label">Your drawing prompt:</div>
+                        <div class="prompt" id="drawingPrompt">A smiling sun</div>
+                    </div>
+                    
+                    <div class="timer-container">
+                        <div class="timer-label">Time Remaining</div>
+                        <div class="timer" id="timer">01:00</div>
+                        <div class="timer-label">Draw quickly! The timer will start when you begin drawing.</div>
+                    </div>
+                    
+                    <div class="canvas-container">
+                        <canvas id="drawingCanvas"></canvas>
+                    </div>
+                    
+                    <div class="tools">
+                        <div class="color-picker">
+                            <div class="color-option active" style="background-color: #ffffff;" data-color="#ffffff"></div>
+                            <div class="color-option" style="background-color: #ff0000;" data-color="#ff0000"></div>
+                            <div class="color-option" style="background-color: #00ff00;" data-color="#00ff00"></div>
+                            <div class="color-option" style="background-color: #0000ff;" data-color="#0000ff"></div>
+                            <div class="color-option" style="background-color: #ffff00;" data-color="#ffff00"></div>
+                            <div class="color-option" style="background-color: #ff00ff;" data-color="#ff00ff"></div>
+                            <div class="color-option" style="background-color: #000000;" data-color="#000000"></div>
+                        </div>
+                        
+                        <div class="brush-size">
+                            <span>Brush Size:</span>
+                            <input type="range" id="brushSize" min="1" max="30" value="5">
+                            <span id="brushSizeValue">5</span>
+                        </div>
+                    </div>
+                    
+                    <div class="controls">
+                        <button class="btn btn-primary" id="startBtn">
+                            <i class="fas fa-play"></i> Start Drawing
+                        </button>
+                        <button class="btn btn-secondary" id="saveBtn" disabled>
+                            <i class="fas fa-save"></i> Save Drawing
+                        </button>
+                        <button class="btn btn-outline" id="clearBtn">
+                            <i class="fas fa-eraser"></i> Clear Canvas
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="gallery-section">
+                    <h2 class="section-title"><i class="fas fa-images"></i> Your Saved Drawings</h2>
+                    
+                    <div class="gallery-container" id="gallery">
+                        <!-- Saved drawings will appear here -->
+                        <div class="empty-gallery">
+                            <i class="fas fa-image"></i>
+                            <p>No drawings yet. Complete a 60-second drawing to see it here!</p>
+                        </div>
+                    </div>
+                    
+                    <div class="controls" style="margin-top: 20px;">
+                        <button class="btn btn-outline" id="clearGalleryBtn">
+                            <i class="fas fa-trash"></i> Clear All Drawings
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="instructions">
+                <h3><i class="fas fa-info-circle"></i> How to Play</h3>
+                <ul>
+                    <li>Click "Start Drawing" to begin the 60-second timer</li>
+                    <li>Draw the first thing that comes to your mind based on the prompt</li>
+                    <li>Use different colors and brush sizes to create your artwork</li>
+                    <li>When time runs out, your drawing will be automatically saved</li>
+                    <li>You can also manually save your drawing before time runs out</li>
+                    <li>All your saved drawings will appear in the gallery on the right</li>
+                    <li>Drawings are saved in your browser, so they'll be here when you return</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="save-notification" id="saveNotification">
+            <i class="fas fa-check-circle"></i>
+            <span>Drawing saved successfully!</span>
+        </div>
+        
+        <footer>
+            <p>QuickDraw Challenge &copy; 2023 | Drawings are saved locally in your browser</p>
+        </footer>
+    </div>
+
+    <script>
+        // DOM Elements
+        const canvas = document.getElementById('drawingCanvas');
+        const ctx = canvas.getContext('2d');
+        const timerElement = document.getElementById('timer');
+        const startBtn = document.getElementById('startBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const clearGalleryBtn = document.getElementById('clearGalleryBtn');
+        const brushSizeSlider = document.getElementById('brushSize');
+        const brushSizeValue = document.getElementById('brushSizeValue');
+        const colorOptions = document.querySelectorAll('.color-option');
+        const gallery = document.getElementById('gallery');
+        const saveNotification = document.getElementById('saveNotification');
+        const drawingPrompt = document.getElementById('drawingPrompt');
+        
+        // Canvas setup
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+        
+        // Drawing state
+        let drawing = false;
+        let timerRunning = false;
+        let timeLeft = 60;
+        let timerInterval;
+        let currentColor = '#ffffff';
+        let currentBrushSize = 5;
+        let hasDrawn = false;
+        
+        // Drawing prompts
+        const prompts = [
+            "A smiling sun", "A sleeping cat", "A flying bird", "A happy face", 
+            "A tall tree", "A cup of coffee", "A simple house", "A flower", 
+            "A star", "A cloud", "A heart", "A fish", "A butterfly", 
+            "A mountain", "A rainbow", "A pizza slice", "A book", "A light bulb"
+        ];
+        
+        // Initialize drawing tools
+        function initDrawingTools() {
+            // Set initial brush size
+            brushSizeValue.textContent = currentBrushSize;
+            
+            // Set up color picker
+            colorOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    colorOptions.forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                    currentColor = option.getAttribute('data-color');
+                });
+            });
+            
+            // Set up brush size slider
+            brushSizeSlider.addEventListener('input', () => {
+                currentBrushSize = brushSizeSlider.value;
+                brushSizeValue.textContent = currentBrushSize;
+            });
+            
+            // Set canvas background
+            ctx.fillStyle = '#0f0f1a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Set a random prompt
+            drawingPrompt.textContent = prompts[Math.floor(Math.random() * prompts.length)];
+        }
+        
+        // Drawing functions
+        function startDrawing(e) {
+            if (!timerRunning && !hasDrawn) {
+                startTimer();
+            }
+            
+            drawing = true;
+            draw(e);
+        }
+        
+        function stopDrawing() {
+            drawing = false;
+            ctx.beginPath();
+        }
+        
+        function draw(e) {
+            if (!drawing) return;
+            
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Get mouse position relative to canvas
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Draw
+            ctx.lineWidth = currentBrushSize;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = currentColor;
+            
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            
+            hasDrawn = true;
+        }
+        
+        // Timer functions
+        function startTimer() {
+            if (timerRunning) return;
+            
+            timerRunning = true;
+            startBtn.disabled = true;
+            startBtn.innerHTML = '<i class="fas fa-paint-brush"></i> Drawing...';
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerRunning = false;
+                    timeUp();
+                }
+            }, 1000);
+        }
+        
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Change color when time is running out
+            if (timeLeft <= 10) {
+                timerElement.style.color = '#ff0000';
+                timerElement.style.textShadow = '0 0 10px rgba(255, 0, 0, 0.7)';
+            }
+        }
+        
+        function timeUp() {
+            saveDrawing();
+            
+            // Show notification
+            showNotification("Time's up! Your drawing has been saved.");
+            
+            // Reset for next round
+            setTimeout(() => {
+                resetGame();
+            }, 3000);
+        }
+        
+        // Save and load drawings
+        function saveDrawing() {
+            if (!hasDrawn) return;
+            
+            // Get canvas data as image
+            const dataUrl = canvas.toDataURL('image/png');
+            const timestamp = new Date().toLocaleString();
+            
+            // Create drawing object
+            const drawing = {
+                id: Date.now(),
+                dataUrl: dataUrl,
+                timestamp: timestamp,
+                prompt: drawingPrompt.textContent
+            };
+            
+            // Get existing drawings from localStorage
+            let drawings = JSON.parse(localStorage.getItem('quickDrawDrawings') || '[]');
+            
+            // Add new drawing
+            drawings.push(drawing);
+            
+            // Save back to localStorage
+            localStorage.setItem('quickDrawDrawings', JSON.stringify(drawings));
+            
+            // Update gallery
+            loadDrawings();
+            
+            // Show notification
+            showNotification("Drawing saved successfully!");
+            
+            // Enable save button
+            saveBtn.disabled = false;
+        }
+        
+        function loadDrawings() {
+            // Get drawings from localStorage
+            const drawings = JSON.parse(localStorage.getItem('quickDrawDrawings') || '[]');
+            
+            // Clear gallery
+            gallery.innerHTML = '';
+            
+            // If no drawings, show empty message
+            if (drawings.length === 0) {
+                gallery.innerHTML = `
+                    <div class="empty-gallery">
+                        <i class="fas fa-image"></i>
+                        <p>No drawings yet. Complete a 60-second drawing to see it here!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Add each drawing to the gallery
+            drawings.forEach(drawing => {
+                const drawingCard = document.createElement('div');
+                drawingCard.className = 'drawing-card';
+                drawingCard.innerHTML = `
+                    <img src="${drawing.dataUrl}" alt="Drawing from ${drawing.timestamp}">
+                    <div class="drawing-info">
+                        <div class="drawing-date">${drawing.timestamp}</div>
+                        <div style="font-size: 0.9rem; margin-top: 5px; color: #4cc9f0;">Prompt: ${drawing.prompt}</div>
+                    </div>
+                `;
+                gallery.appendChild(drawingCard);
+            });
+        }
+        
+        function clearGallery() {
+            if (confirm("Are you sure you want to delete all your drawings? This cannot be undone.")) {
+                localStorage.removeItem('quickDrawDrawings');
+                loadDrawings();
+                showNotification("All drawings have been deleted.");
+            }
+        }
+        
+        // Game control functions
+        function resetGame() {
+            // Clear timer
+            clearInterval(timerInterval);
+            timerRunning = false;
+            timeLeft = 60;
+            updateTimerDisplay();
+            
+            // Reset timer color
+            timerElement.style.color = '#f72585';
+            timerElement.style.textShadow = '0 0 10px rgba(247, 37, 133, 0.5)';
+            
+            // Reset canvas
+            clearCanvas();
+            
+            // Reset buttons
+            startBtn.disabled = false;
+            startBtn.innerHTML = '<i class="fas fa-play"></i> Start Drawing';
+            saveBtn.disabled = true;
+            
+            // Reset drawing state
+            hasDrawn = false;
+            
+            // Set new random prompt
+            drawingPrompt.textContent = prompts[Math.floor(Math.random() * prompts.length)];
+        }
+        
+        function clearCanvas() {
+            ctx.fillStyle = '#0f0f1a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            hasDrawn = false;
+            saveBtn.disabled = true;
+        }
+        
+        function showNotification(message) {
+            saveNotification.querySelector('span').textContent = message;
+            saveNotification.classList.add('show');
+            
+            setTimeout(() => {
+                saveNotification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Event Listeners
+        startBtn.addEventListener('click', () => {
+            if (!timerRunning) {
+                startTimer();
+                showNotification("Timer started! Draw the first thing that comes to mind.");
+            }
+        });
+        
+        saveBtn.addEventListener('click', saveDrawing);
+        
+        clearBtn.addEventListener('click', () => {
+            if (hasDrawn && confirm("Clear your current drawing? This cannot be undone.")) {
+                clearCanvas();
+            } else if (!hasDrawn) {
+                clearCanvas();
+            }
+        });
+        
+        clearGalleryBtn.addEventListener('click', clearGallery);
+        
+        // Canvas event listeners
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+        
+        // Touch events for mobile
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startDrawing(e.touches[0]);
+        });
+        
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            draw(e.touches[0]);
+        });
+        
+        canvas.addEventListener('touchend', stopDrawing);
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            // Save current drawing if exists
+            let currentDrawing = null;
+            if (hasDrawn) {
+                currentDrawing = canvas.toDataURL('image/png');
+            }
+            
+            // Resize canvas
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            // Redraw if there was a drawing
+            if (currentDrawing) {
+                const img = new Image();
+                img.onload = () => {
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                };
+                img.src = currentDrawing;
+            } else {
+                clearCanvas();
+            }
+        });
+        
+        // Initialize the app
+        function initApp() {
+            initDrawingTools();
+            loadDrawings();
+            updateTimerDisplay();
+        }
+        
+        // Start the app
+        initApp();
+    </script>
+</body>
+</html>
