@@ -2,790 +2,855 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QuickDraw: 60-Second Drawing Challenge</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>QuickDraw Challenge</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --bg-primary: #0f0b1f;
+            --bg-card: #1a1529;
+            --accent-blue: #00e0ff;
+            --accent-pink: #ff2a6d;
+            --accent-purple: #9d4edd;
+            --text-light: #e0d6f9;
+            --text-dim: #8a7caa;
+        }
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
-        
         body {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-light);
             min-height: 100vh;
-            padding: 20px;
+            overflow-x: hidden;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
         }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        header {
+        /* Header & Screens */
+        .app-header {
             text-align: center;
-            padding: 20px 0 30px;
-            border-bottom: 2px solid #4cc9f0;
-            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(157, 78, 221, 0.2);
+            margin-bottom: 25px;
         }
-        
-        h1 {
+        .app-header h1 {
             font-size: 2.8rem;
-            margin-bottom: 10px;
-            background: linear-gradient(90deg, #4cc9f0, #f72585);
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-pink));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            letter-spacing: -0.5px;
         }
-        
-        .subtitle {
-            font-size: 1.2rem;
-            color: #b8c1ec;
-            max-width: 600px;
-            margin: 0 auto;
-            line-height: 1.5;
+        .app-header .tagline {
+            font-size: 1.15rem;
+            color: var(--text-dim);
+            max-width: 280px;
+            margin: 0 auto 5px;
+            line-height: 1.4;
         }
-        
-        .app-container {
-            display: flex;
+        .version {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-top: 5px;
+        }
+        .screen {
+            display: none;
             flex-direction: column;
-            gap: 30px;
+            flex: 1;
         }
-        
-        .game-area {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
+        .screen.active {
+            display: flex;
         }
-        
-        @media (max-width: 900px) {
-            .game-area {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .drawing-section {
-            background: rgba(30, 30, 46, 0.8);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            border: 1px solid #2d3047;
-        }
-        
-        .gallery-section {
-            background: rgba(30, 30, 46, 0.8);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            border: 1px solid #2d3047;
-        }
-        
-        .section-title {
-            font-size: 1.5rem;
+        /* Home Screen */
+        .feature-icon {
+            font-size: 3.5rem;
             margin-bottom: 20px;
-            color: #4cc9f0;
+            color: var(--accent-blue);
+        }
+        .home-instructions {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 25px 20px;
+            margin: 25px 0;
+            border: 1px solid rgba(0, 224, 255, 0.1);
+        }
+        .home-instructions h3 {
+            color: var(--accent-blue);
+            margin-bottom: 15px;
+            font-size: 1.4rem;
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        
-        .section-title i {
-            font-size: 1.3rem;
+        .instruction-step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 18px;
         }
-        
-        .timer-container {
-            background: rgba(20, 20, 40, 0.9);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            text-align: center;
-            border: 2px solid #f72585;
-        }
-        
-        .timer {
-            font-size: 3rem;
+        .step-number {
+            background: var(--accent-purple);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-weight: bold;
-            color: #f72585;
-            text-shadow: 0 0 10px rgba(247, 37, 133, 0.5);
-            margin: 10px 0;
+            flex-shrink: 0;
+            margin-right: 15px;
+            margin-top: 2px;
         }
-        
-        .timer-label {
+        .prompt-box {
+            background: linear-gradient(135deg, #1a1529, #241b3d);
+            border-radius: 18px;
+            padding: 25px 20px;
+            text-align: center;
+            margin: 25px 0;
+            border: 2px dashed var(--accent-purple);
+        }
+        .prompt-label {
+            color: var(--accent-pink);
             font-size: 1rem;
-            color: #b8c1ec;
+            margin-bottom: 12px;
+            display: block;
         }
-        
-        .canvas-container {
-            background: #0f0f1a;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 2px solid #4361ee;
+        #currentPrompt {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            line-height: 1.3;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* Buttons */
+        .btn {
+            padding: 20px 30px;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.25s ease;
+            margin-top: 15px;
+            width: 100%;
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, var(--accent-pink), #ff5e9a);
+            color: white;
+            box-shadow: 0 6px 0 rgba(255, 42, 109, 0.3);
+        }
+        .btn-secondary {
+            background: linear-gradient(90deg, var(--accent-blue), #5ae9ff);
+            color: var(--bg-primary);
+            font-weight: 800;
+            box-shadow: 0 6px 0 rgba(0, 224, 255, 0.3);
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--accent-blue);
+            border: 2px solid var(--accent-blue);
+        }
+        /* Drawing Screen */
+        .timer-display {
+            background: var(--bg-card);
+            border-radius: 18px;
+            padding: 20px;
+            text-align: center;
             margin-bottom: 20px;
+            border: 2px solid var(--accent-pink);
+        }
+        .timer-label {
+            color: var(--text-dim);
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+        #countdownTimer {
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--accent-pink);
+            text-shadow: 0 0 15px rgba(255, 42, 109, 0.5);
+            font-variant-numeric: tabular-nums;
+        }
+        .canvas-container {
+            background: #080614;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid rgba(0, 224, 255, 0.3);
+            margin-bottom: 20px;
+            flex: 1;
+            min-height: 350px;
             position: relative;
         }
-        
         #drawingCanvas {
             display: block;
-            background: #0f0f1a;
-            cursor: crosshair;
+            background: #080614;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="white" stroke="%2300e0ff" stroke-width="1"/></svg>') 8 8, crosshair;
+            touch-action: none;
             width: 100%;
-            height: 400px;
+            height: 100%;
         }
-        
-        .tools {
+        .drawing-tools {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 20px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 18px 20px;
+            margin-bottom: 20px;
         }
-        
-        .color-picker, .brush-size {
+        .color-palette {
             display: flex;
-            align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
-        
         .color-option {
-            width: 30px;
-            height: 30px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             cursor: pointer;
-            border: 2px solid transparent;
-            transition: transform 0.2s, border-color 0.2s;
+            border: 3px solid transparent;
+            transition: transform 0.15s, border-color 0.15s;
         }
-        
-        .color-option:hover {
-            transform: scale(1.2);
-        }
-        
         .color-option.active {
             border-color: white;
-            transform: scale(1.2);
+            transform: scale(1.15);
         }
-        
-        .brush-size input {
-            width: 150px;
-        }
-        
-        .controls {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
+        .brush-control {
             display: flex;
             align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
+            gap: 15px;
         }
-        
-        .btn-primary {
-            background: linear-gradient(90deg, #4361ee, #3a0ca3);
-            color: white;
+        .brush-control span {
+            color: var(--text-dim);
+            font-size: 0.95rem;
         }
-        
-        .btn-primary:hover {
-            background: linear-gradient(90deg, #3a0ca3, #4361ee);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+        #brushSlider {
+            width: 100px;
+            accent-color: var(--accent-blue);
         }
-        
-        .btn-secondary {
-            background: linear-gradient(90deg, #f72585, #b5179e);
-            color: white;
+        .drawing-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
         }
-        
-        .btn-secondary:hover {
-            background: linear-gradient(90deg, #b5179e, #f72585);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(247, 37, 133, 0.4);
+        .drawing-actions .btn {
+            margin-top: 0;
+            padding: 18px 20px;
+            font-size: 1.15rem;
         }
-        
-        .btn-outline {
-            background: transparent;
-            color: #4cc9f0;
-            border: 2px solid #4cc9f0;
+        /* Gallery Screen */
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
         }
-        
-        .btn-outline:hover {
-            background: rgba(76, 201, 240, 0.1);
-            transform: translateY(-3px);
-        }
-        
         .gallery-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 20px;
-            max-height: 500px;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 18px;
             overflow-y: auto;
-            padding: 10px;
+            padding: 10px 5px 30px;
+            flex: 1;
         }
-        
-        .drawing-card {
-            background: rgba(20, 20, 40, 0.9);
-            border-radius: 10px;
+        .drawing-thumb {
+            background: var(--bg-card);
+            border-radius: 14px;
             overflow: hidden;
-            transition: transform 0.3s;
-            border: 1px solid #2d3047;
+            transition: transform 0.3s, border-color 0.3s;
+            border: 2px solid transparent;
+            aspect-ratio: 1/1;
         }
-        
-        .drawing-card:hover {
+        .drawing-thumb:hover,
+        .drawing-thumb:active {
+            border-color: var(--accent-blue);
             transform: translateY(-5px);
-            border-color: #4cc9f0;
         }
-        
-        .drawing-card img {
+        .drawing-thumb img {
             width: 100%;
-            height: 140px;
+            height: 100%;
             object-fit: cover;
             display: block;
         }
-        
-        .drawing-info {
-            padding: 12px;
-        }
-        
-        .drawing-date {
-            font-size: 0.8rem;
-            color: #b8c1ec;
-        }
-        
         .empty-gallery {
             text-align: center;
-            padding: 40px 20px;
-            color: #b8c1ec;
+            padding: 50px 20px;
             grid-column: 1 / -1;
+            color: var(--text-dim);
         }
-        
         .empty-gallery i {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            color: #4361ee;
-        }
-        
-        .prompt-container {
-            background: rgba(20, 20, 40, 0.9);
-            border-radius: 10px;
-            padding: 15px;
+            font-size: 4rem;
             margin-bottom: 20px;
+            color: var(--accent-purple);
+            opacity: 0.7;
+        }
+        /* Navigation */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 18px 15px;
+            margin-top: 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-dim);
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 12px;
+            transition: all 0.2s;
+            flex: 1;
             text-align: center;
-            border: 2px solid #7209b7;
         }
-        
-        .prompt {
-            font-size: 1.3rem;
-            color: #7209b7;
-            font-weight: bold;
-            margin: 10px 0;
+        .nav-item.active {
+            color: var(--accent-blue);
+            background: rgba(0, 224, 255, 0.08);
         }
-        
-        .instructions {
-            background: rgba(20, 20, 40, 0.9);
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 30px;
+        .nav-item i {
+            font-size: 1.4rem;
         }
-        
-        .instructions h3 {
-            color: #4cc9f0;
-            margin-bottom: 15px;
+        .nav-item span {
+            font-size: 0.9rem;
+            font-weight: 600;
         }
-        
-        .instructions ul {
-            padding-left: 20px;
-            color: #b8c1ec;
-            line-height: 1.6;
-        }
-        
-        .instructions li {
-            margin-bottom: 8px;
-        }
-        
-        .save-notification {
+        /* Notifications */
+        .notification {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #4CAF50;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--accent-purple);
             color: white;
-            padding: 15px 25px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            padding: 18px 25px;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
             display: flex;
             align-items: center;
-            gap: 10px;
-            transform: translateY(100px);
+            gap: 15px;
             opacity: 0;
             transition: transform 0.5s, opacity 0.5s;
             z-index: 1000;
+            max-width: 90%;
+            text-align: center;
         }
-        
-        .save-notification.show {
-            transform: translateY(0);
+        .notification.show {
+            transform: translateX(-50%) translateY(0);
             opacity: 1;
         }
-        
-        footer {
-            text-align: center;
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #2d3047;
-            color: #b8c1ec;
-            font-size: 0.9rem;
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .app-header h1 { font-size: 2.4rem; }
+            .btn { padding: 18px 25px; font-size: 1.2rem; }
+            #countdownTimer { font-size: 3.5rem; }
+            .gallery-container { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (min-width: 768px) {
+            body { max-width: 500px; margin: 0 auto; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1><i class="fas fa-paint-brush"></i> QuickDraw Challenge</h1>
-            <p class="subtitle">Draw the first thing that comes to your mind in only 60 seconds. Your drawings are automatically saved and can be viewed anytime you open the app.</p>
-        </header>
+    <!-- App Header -->
+    <div class="app-header">
+        <h1>QuickDraw</h1>
+        <p class="tagline">Draw the first thing you see in only one minute!</p>
+        <div class="version">v2.0 • Made for fun</div>
+    </div>
+
+    <!-- Home Screen -->
+    <div id="homeScreen" class="screen active">
+        <div style="text-align: center; margin-top: 20px;">
+            <i class="fas fa-paint-brush feature-icon"></i>
+        </div>
         
-        <div class="app-container">
-            <div class="game-area">
-                <div class="drawing-section">
-                    <h2 class="section-title"><i class="fas fa-palette"></i> Drawing Board</h2>
-                    
-                    <div class="prompt-container">
-                        <div class="prompt-label">Your drawing prompt:</div>
-                        <div class="prompt" id="drawingPrompt">A smiling sun</div>
-                    </div>
-                    
-                    <div class="timer-container">
-                        <div class="timer-label">Time Remaining</div>
-                        <div class="timer" id="timer">01:00</div>
-                        <div class="timer-label">Draw quickly! The timer will start when you begin drawing.</div>
-                    </div>
-                    
-                    <div class="canvas-container">
-                        <canvas id="drawingCanvas"></canvas>
-                    </div>
-                    
-                    <div class="tools">
-                        <div class="color-picker">
-                            <div class="color-option active" style="background-color: #ffffff;" data-color="#ffffff"></div>
-                            <div class="color-option" style="background-color: #ff0000;" data-color="#ff0000"></div>
-                            <div class="color-option" style="background-color: #00ff00;" data-color="#00ff00"></div>
-                            <div class="color-option" style="background-color: #0000ff;" data-color="#0000ff"></div>
-                            <div class="color-option" style="background-color: #ffff00;" data-color="#ffff00"></div>
-                            <div class="color-option" style="background-color: #ff00ff;" data-color="#ff00ff"></div>
-                            <div class="color-option" style="background-color: #000000;" data-color="#000000"></div>
-                        </div>
-                        
-                        <div class="brush-size">
-                            <span>Brush Size:</span>
-                            <input type="range" id="brushSize" min="1" max="30" value="5">
-                            <span id="brushSizeValue">5</span>
-                        </div>
-                    </div>
-                    
-                    <div class="controls">
-                        <button class="btn btn-primary" id="startBtn">
-                            <i class="fas fa-play"></i> Start Drawing
-                        </button>
-                        <button class="btn btn-secondary" id="saveBtn" disabled>
-                            <i class="fas fa-save"></i> Save Drawing
-                        </button>
-                        <button class="btn btn-outline" id="clearBtn">
-                            <i class="fas fa-eraser"></i> Clear Canvas
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="gallery-section">
-                    <h2 class="section-title"><i class="fas fa-images"></i> Your Saved Drawings</h2>
-                    
-                    <div class="gallery-container" id="gallery">
-                        <!-- Saved drawings will appear here -->
-                        <div class="empty-gallery">
-                            <i class="fas fa-image"></i>
-                            <p>No drawings yet. Complete a 60-second drawing to see it here!</p>
-                        </div>
-                    </div>
-                    
-                    <div class="controls" style="margin-top: 20px;">
-                        <button class="btn btn-outline" id="clearGalleryBtn">
-                            <i class="fas fa-trash"></i> Clear All Drawings
-                        </button>
-                    </div>
-                </div>
+        <div class="home-instructions">
+            <h3><i class="fas fa-gamepad"></i> How to Play</h3>
+            <div class="instruction-step">
+                <div class="step-number">1</div>
+                <div>Tap <strong>Start Challenge</strong> to begin the 60-second timer.</div>
+            </div>
+            <div class="instruction-step">
+                <div class="step-number">2</div>
+                <div>Draw the first thing that comes to mind based on the prompt.</div>
+            </div>
+            <div class="instruction-step">
+                <div class="step-number">3</div>
+                <div>Your masterpiece is saved automatically when time runs out!</div>
+            </div>
+        </div>
+
+        <div class="prompt-box">
+            <span class="prompt-label">YOUR DRAWING PROMPT</span>
+            <div id="currentPrompt">A smiling sun with sunglasses</div>
+        </div>
+
+        <button id="startButton" class="btn btn-primary">
+            <i class="fas fa-play-circle"></i> START CHALLENGE
+        </button>
+        
+        <button id="viewGalleryHome" class="btn btn-outline">
+            <i class="fas fa-images"></i> VIEW MY GALLERY
+        </button>
+    </div>
+
+    <!-- Drawing Screen -->
+    <div id="drawingScreen" class="screen">
+        <div class="timer-display">
+            <div class="timer-label">TIME REMAINING</div>
+            <div id="countdownTimer">01:00</div>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="drawingCanvas"></canvas>
+        </div>
+
+        <div class="drawing-tools">
+            <div class="color-palette">
+                <div class="color-option active" style="background-color: #ffffff;" data-color="#ffffff"></div>
+                <div class="color-option" style="background-color: #ff2a6d;" data-color="#ff2a6d"></div>
+                <div class="color-option" style="background-color: #00e0ff;" data-color="#00e0ff"></div>
+                <div class="color-option" style="background-color: #9d4edd;" data-color="#9d4edd"></div>
+                <div class="color-option" style="background-color: #000000;" data-color="#000000"></div>
             </div>
             
-            <div class="instructions">
-                <h3><i class="fas fa-info-circle"></i> How to Play</h3>
-                <ul>
-                    <li>Click "Start Drawing" to begin the 60-second timer</li>
-                    <li>Draw the first thing that comes to your mind based on the prompt</li>
-                    <li>Use different colors and brush sizes to create your artwork</li>
-                    <li>When time runs out, your drawing will be automatically saved</li>
-                    <li>You can also manually save your drawing before time runs out</li>
-                    <li>All your saved drawings will appear in the gallery on the right</li>
-                    <li>Drawings are saved in your browser, so they'll be here when you return</li>
-                </ul>
+            <div class="brush-control">
+                <span><i class="fas fa-circle"></i></span>
+                <input type="range" id="brushSlider" min="1" max="30" value="5">
             </div>
         </div>
-        
-        <div class="save-notification" id="saveNotification">
-            <i class="fas fa-check-circle"></i>
-            <span>Drawing saved successfully!</span>
+
+        <div class="drawing-actions">
+            <button id="saveDrawingBtn" class="btn btn-secondary" style="flex: 2;">
+                <i class="fas fa-save"></i> SAVE & FINISH
+            </button>
+            <button id="clearCanvasBtn" class="btn btn-outline" style="flex: 1;">
+                <i class="fas fa-eraser"></i> CLEAR
+            </button>
+        </div>
+    </div>
+
+    <!-- Gallery Screen -->
+    <div id="galleryScreen" class="screen">
+        <div class="gallery-header">
+            <h2 style="font-size: 1.6rem;"><i class="fas fa-images"></i> My Gallery</h2>
+            <button id="clearGalleryBtn" class="btn-outline" style="padding: 10px 18px; font-size: 0.9rem;">
+                <i class="fas fa-trash"></i> Clear All
+            </button>
         </div>
         
-        <footer>
-            <p>QuickDraw Challenge &copy; 2023 | Drawings are saved locally in your browser</p>
-        </footer>
+        <div class="gallery-container" id="savedDrawingsContainer">
+            <!-- Drawings will be loaded here -->
+            <div class="empty-gallery">
+                <i class="fas fa-palette"></i>
+                <p>No drawings yet.<br>Complete a challenge to see your art here!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item active" data-screen="homeScreen">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </div>
+        <div class="nav-item" data-screen="drawingScreen">
+            <i class="fas fa-paint-brush"></i>
+            <span>Draw</span>
+        </div>
+        <div class="nav-item" data-screen="galleryScreen">
+            <i class="fas fa-images"></i>
+            <span>Gallery</span>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="saveNotification">
+        <i class="fas fa-check-circle"></i>
+        <span>Drawing saved to your gallery!</span>
     </div>
 
     <script>
-        // DOM Elements
+        // ========== DOM ELEMENTS ==========
+        const screens = {
+            home: document.getElementById('homeScreen'),
+            drawing: document.getElementById('drawingScreen'),
+            gallery: document.getElementById('galleryScreen')
+        };
+        const navItems = document.querySelectorAll('.nav-item');
+        const currentPromptEl = document.getElementById('currentPrompt');
+        const startButton = document.getElementById('startButton');
+        const viewGalleryHome = document.getElementById('viewGalleryHome');
+        const saveDrawingBtn = document.getElementById('saveDrawingBtn');
+        const clearCanvasBtn = document.getElementById('clearCanvasBtn');
+        const clearGalleryBtn = document.getElementById('clearGalleryBtn');
         const canvas = document.getElementById('drawingCanvas');
         const ctx = canvas.getContext('2d');
-        const timerElement = document.getElementById('timer');
-        const startBtn = document.getElementById('startBtn');
-        const saveBtn = document.getElementById('saveBtn');
-        const clearBtn = document.getElementById('clearBtn');
-        const clearGalleryBtn = document.getElementById('clearGalleryBtn');
-        const brushSizeSlider = document.getElementById('brushSize');
-        const brushSizeValue = document.getElementById('brushSizeValue');
+        const countdownTimer = document.getElementById('countdownTimer');
         const colorOptions = document.querySelectorAll('.color-option');
-        const gallery = document.getElementById('gallery');
-        const saveNotification = document.getElementById('saveNotification');
-        const drawingPrompt = document.getElementById('drawingPrompt');
-        
-        // Canvas setup
-        canvas.width = canvas.offsetWidth;
-        canvas.height = canvas.offsetHeight;
-        
-        // Drawing state
-        let drawing = false;
-        let timerRunning = false;
-        let timeLeft = 60;
-        let timerInterval;
-        let currentColor = '#ffffff';
-        let currentBrushSize = 5;
-        let hasDrawn = false;
-        
+        const brushSlider = document.getElementById('brushSlider');
+        const savedDrawingsContainer = document.getElementById('savedDrawingsContainer');
+        const notification = document.getElementById('saveNotification');
+
+        // ========== APP STATE ==========
+        let state = {
+            currentScreen: 'homeScreen',
+            drawingActive: false,
+            timeLeft: 60,
+            timerInterval: null,
+            currentColor: '#ffffff',
+            currentBrushSize: 5,
+            isDrawing: false,
+            lastX: 0,
+            lastY: 0,
+            hasDrawn: false
+        };
+
         // Drawing prompts
         const prompts = [
-            "A smiling sun", "A sleeping cat", "A flying bird", "A happy face", 
-            "A tall tree", "A cup of coffee", "A simple house", "A flower", 
-            "A star", "A cloud", "A heart", "A fish", "A butterfly", 
-            "A mountain", "A rainbow", "A pizza slice", "A book", "A light bulb"
+            "A smiling sun with sunglasses", "A sleepy cat in a spaceship", "A dancing slice of pizza", 
+            "A robot walking a dog", "A tree with money for leaves", "A floating island with a castle",
+            "A angry storm cloud", "A friendly monster under the bed", "A bicycle made of fruit",
+            "A melting clock", "A cup of coffee reading news", "A bird wearing a hat"
         ];
-        
-        // Initialize drawing tools
-        function initDrawingTools() {
-            // Set initial brush size
-            brushSizeValue.textContent = currentBrushSize;
+
+        // ========== SCREEN MANAGEMENT ==========
+        function showScreen(screenId) {
+            // Update active screen
+            Object.keys(screens).forEach(key => {
+                screens[key].classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+            state.currentScreen = screenId;
             
-            // Set up color picker
+            // Update navigation
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-screen') === screenId) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Handle canvas resize when showing drawing screen
+            if (screenId === 'drawingScreen') {
+                setTimeout(resizeCanvas, 50);
+            }
+            
+            // Load gallery when showing gallery screen
+            if (screenId === 'galleryScreen') {
+                loadGallery();
+            }
+        }
+
+        // Navigation click handlers
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const screenId = item.getAttribute('data-screen');
+                showScreen(screenId);
+            });
+        });
+
+        viewGalleryHome.addEventListener('click', () => showScreen('galleryScreen'));
+
+        // ========== DRAWING SETUP ==========
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            const dpr = window.devicePixelRatio || 1;
+            
+            canvas.width = container.clientWidth * dpr;
+            canvas.height = container.clientHeight * dpr;
+            
+            ctx.scale(dpr, dpr);
+            canvas.style.width = `${container.clientWidth}px`;
+            canvas.style.height = `${container.clientHeight}px`;
+            
+            if (!state.hasDrawn) {
+                clearCanvas();
+            }
+        }
+
+        function clearCanvas() {
+            ctx.fillStyle = '#080614';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            state.hasDrawn = false;
+        }
+
+        function initDrawingTools() {
+            // Color picker
             colorOptions.forEach(option => {
-                option.addEventListener('click', () => {
+                option.addEventListener('click', function() {
                     colorOptions.forEach(opt => opt.classList.remove('active'));
-                    option.classList.add('active');
-                    currentColor = option.getAttribute('data-color');
+                    this.classList.add('active');
+                    state.currentColor = this.getAttribute('data-color');
                 });
             });
             
-            // Set up brush size slider
-            brushSizeSlider.addEventListener('input', () => {
-                currentBrushSize = brushSizeSlider.value;
-                brushSizeValue.textContent = currentBrushSize;
+            // Brush size
+            brushSlider.addEventListener('input', function() {
+                state.currentBrushSize = parseInt(this.value);
             });
             
-            // Set canvas background
-            ctx.fillStyle = '#0f0f1a';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // Set random prompt
+            currentPromptEl.textContent = prompts[Math.floor(Math.random() * prompts.length)];
             
-            // Set a random prompt
-            drawingPrompt.textContent = prompts[Math.floor(Math.random() * prompts.length)];
+            // Clear canvas button
+            clearCanvasBtn.addEventListener('click', () => {
+                if (!state.hasDrawn || confirm('Clear your current drawing?')) {
+                    clearCanvas();
+                }
+            });
+            
+            // Initial canvas setup
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
         }
-        
-        // Drawing functions
-        function startDrawing(e) {
-            if (!timerRunning && !hasDrawn) {
-                startTimer();
+
+        // ========== DRAWING FUNCTIONS ==========
+        function getCanvasPosition(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / (rect.width * (window.devicePixelRatio || 1));
+            const scaleY = canvas.height / (rect.height * (window.devicePixelRatio || 1));
+            
+            let clientX, clientY;
+            
+            if (e.type.includes('touch')) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
             }
             
-            drawing = true;
-            draw(e);
+            return {
+                x: (clientX - rect.left) * scaleX,
+                y: (clientY - rect.top) * scaleY
+            };
         }
-        
-        function stopDrawing() {
-            drawing = false;
-            ctx.beginPath();
-        }
-        
-        function draw(e) {
-            if (!drawing) return;
-            
+
+        function startDrawing(e) {
             e.preventDefault();
-            e.stopPropagation();
+            state.isDrawing = true;
+            const pos = getCanvasPosition(e);
+            [state.lastX, state.lastY] = [pos.x, pos.y];
             
-            // Get mouse position relative to canvas
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            // Draw
-            ctx.lineWidth = currentBrushSize;
-            ctx.lineCap = 'round';
-            ctx.strokeStyle = currentColor;
-            
-            ctx.lineTo(x, y);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-            
-            hasDrawn = true;
+            // Start timer on first draw if not already running
+            if (!state.drawingActive && state.timeLeft === 60) {
+                startTimer();
+            }
         }
-        
-        // Timer functions
+
+        function draw(e) {
+            if (!state.isDrawing) return;
+            e.preventDefault();
+            
+            const pos = getCanvasPosition(e);
+            
+            ctx.beginPath();
+            ctx.lineWidth = state.currentBrushSize;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = state.currentColor;
+            ctx.moveTo(state.lastX, state.lastY);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            
+            [state.lastX, state.lastY] = [pos.x, pos.y];
+            state.hasDrawn = true;
+        }
+
+        function stopDrawing() {
+            state.isDrawing = false;
+            ctx.beginPath();
+        }
+
+        // ========== TIMER FUNCTIONS ==========
         function startTimer() {
-            if (timerRunning) return;
+            if (state.drawingActive) return;
             
-            timerRunning = true;
-            startBtn.disabled = true;
-            startBtn.innerHTML = '<i class="fas fa-paint-brush"></i> Drawing...';
+            state.drawingActive = true;
+            state.timeLeft = 60;
+            updateTimerDisplay();
             
-            timerInterval = setInterval(() => {
-                timeLeft--;
+            state.timerInterval = setInterval(() => {
+                state.timeLeft--;
                 updateTimerDisplay();
                 
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    timerRunning = false;
+                if (state.timeLeft <= 0) {
+                    clearInterval(state.timerInterval);
                     timeUp();
                 }
             }, 1000);
         }
-        
+
         function updateTimerDisplay() {
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            const minutes = Math.floor(state.timeLeft / 60);
+            const seconds = state.timeLeft % 60;
+            countdownTimer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             
-            // Change color when time is running out
-            if (timeLeft <= 10) {
-                timerElement.style.color = '#ff0000';
-                timerElement.style.textShadow = '0 0 10px rgba(255, 0, 0, 0.7)';
+            // Visual warning when time is running out
+            if (state.timeLeft <= 10) {
+                countdownTimer.style.color = '#ff2a6d';
+                countdownTimer.style.textShadow = '0 0 20px rgba(255, 42, 109, 0.8)';
             }
         }
-        
+
         function timeUp() {
             saveDrawing();
+            showNotification("Time's up! Drawing saved.");
             
-            // Show notification
-            showNotification("Time's up! Your drawing has been saved.");
-            
-            // Reset for next round
+            // Auto-return to home after delay
             setTimeout(() => {
-                resetGame();
+                resetDrawingState();
+                showScreen('homeScreen');
             }, 3000);
         }
-        
-        // Save and load drawings
+
+        function resetDrawingState() {
+            clearInterval(state.timerInterval);
+            state.drawingActive = false;
+            state.timeLeft = 60;
+            countdownTimer.style.color = '';
+            countdownTimer.style.textShadow = '';
+            updateTimerDisplay();
+            clearCanvas();
+            currentPromptEl.textContent = prompts[Math.floor(Math.random() * prompts.length)];
+        }
+
+        // ========== DRAWING SAVING & GALLERY ==========
         function saveDrawing() {
-            if (!hasDrawn) return;
+            if (!state.hasDrawn) {
+                showNotification("Draw something first!");
+                return;
+            }
             
-            // Get canvas data as image
+            // Get canvas data
             const dataUrl = canvas.toDataURL('image/png');
-            const timestamp = new Date().toLocaleString();
+            const timestamp = new Date().toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
             
             // Create drawing object
             const drawing = {
                 id: Date.now(),
                 dataUrl: dataUrl,
                 timestamp: timestamp,
-                prompt: drawingPrompt.textContent
+                prompt: currentPromptEl.textContent
             };
             
-            // Get existing drawings from localStorage
+            // Save to localStorage
             let drawings = JSON.parse(localStorage.getItem('quickDrawDrawings') || '[]');
-            
-            // Add new drawing
-            drawings.push(drawing);
-            
-            // Save back to localStorage
+            drawings.unshift(drawing); // Add to beginning
+            if (drawings.length > 50) drawings = drawings.slice(0, 50); // Limit to 50
             localStorage.setItem('quickDrawDrawings', JSON.stringify(drawings));
             
-            // Update gallery
-            loadDrawings();
-            
             // Show notification
-            showNotification("Drawing saved successfully!");
+            showNotification("Drawing saved to gallery!");
             
-            // Enable save button
-            saveBtn.disabled = false;
+            // Reset for next drawing
+            resetDrawingState();
         }
-        
-        function loadDrawings() {
-            // Get drawings from localStorage
+
+        function loadGallery() {
             const drawings = JSON.parse(localStorage.getItem('quickDrawDrawings') || '[]');
+            savedDrawingsContainer.innerHTML = '';
             
-            // Clear gallery
-            gallery.innerHTML = '';
-            
-            // If no drawings, show empty message
             if (drawings.length === 0) {
-                gallery.innerHTML = `
+                savedDrawingsContainer.innerHTML = `
                     <div class="empty-gallery">
-                        <i class="fas fa-image"></i>
-                        <p>No drawings yet. Complete a 60-second drawing to see it here!</p>
+                        <i class="fas fa-palette"></i>
+                        <p>No drawings yet.<br>Complete a challenge to see your art here!</p>
                     </div>
                 `;
                 return;
             }
             
-            // Add each drawing to the gallery
             drawings.forEach(drawing => {
-                const drawingCard = document.createElement('div');
-                drawingCard.className = 'drawing-card';
-                drawingCard.innerHTML = `
-                    <img src="${drawing.dataUrl}" alt="Drawing from ${drawing.timestamp}">
-                    <div class="drawing-info">
-                        <div class="drawing-date">${drawing.timestamp}</div>
-                        <div style="font-size: 0.9rem; margin-top: 5px; color: #4cc9f0;">Prompt: ${drawing.prompt}</div>
-                    </div>
+                const thumb = document.createElement('div');
+                thumb.className = 'drawing-thumb';
+                thumb.innerHTML = `
+                    <img src="${drawing.dataUrl}" alt="Drawing from ${drawing.timestamp}" loading="lazy">
                 `;
-                gallery.appendChild(drawingCard);
+                thumb.addEventListener('click', () => {
+                    alert(`Drawn on: ${drawing.timestamp}\nPrompt: ${drawing.prompt}`);
+                });
+                savedDrawingsContainer.appendChild(thumb);
             });
         }
-        
+
         function clearGallery() {
-            if (confirm("Are you sure you want to delete all your drawings? This cannot be undone.")) {
-                localStorage.removeItem('quickDrawDrawings');
-                loadDrawings();
-                showNotification("All drawings have been deleted.");
-            }
+            if (!confirm("Delete all your drawings? This cannot be undone.")) return;
+            
+            localStorage.removeItem('quickDrawDrawings');
+            loadGallery();
+            showNotification("All drawings deleted.");
         }
-        
-        // Game control functions
-        function resetGame() {
-            // Clear timer
-            clearInterval(timerInterval);
-            timerRunning = false;
-            timeLeft = 60;
-            updateTimerDisplay();
-            
-            // Reset timer color
-            timerElement.style.color = '#f72585';
-            timerElement.style.textShadow = '0 0 10px rgba(247, 37, 133, 0.5)';
-            
-            // Reset canvas
-            clearCanvas();
-            
-            // Reset buttons
-            startBtn.disabled = false;
-            startBtn.innerHTML = '<i class="fas fa-play"></i> Start Drawing';
-            saveBtn.disabled = true;
-            
-            // Reset drawing state
-            hasDrawn = false;
-            
-            // Set new random prompt
-            drawingPrompt.textContent = prompts[Math.floor(Math.random() * prompts.length)];
-        }
-        
-        function clearCanvas() {
-            ctx.fillStyle = '#0f0f1a';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            hasDrawn = false;
-            saveBtn.disabled = true;
-        }
-        
+
+        // ========== NOTIFICATION ==========
         function showNotification(message) {
-            saveNotification.querySelector('span').textContent = message;
-            saveNotification.classList.add('show');
+            notification.querySelector('span').textContent = message;
+            notification.classList.add('show');
             
             setTimeout(() => {
-                saveNotification.classList.remove('show');
+                notification.classList.remove('show');
             }, 3000);
         }
-        
-        // Event Listeners
-        startBtn.addEventListener('click', () => {
-            if (!timerRunning) {
-                startTimer();
-                showNotification("Timer started! Draw the first thing that comes to mind.");
-            }
+
+        // ========== EVENT LISTENERS ==========
+        // Start drawing challenge
+        startButton.addEventListener('click', () => {
+            showScreen('drawingScreen');
         });
-        
-        saveBtn.addEventListener('click', saveDrawing);
-        
-        clearBtn.addEventListener('click', () => {
-            if (hasDrawn && confirm("Clear your current drawing? This cannot be undone.")) {
-                clearCanvas();
-            } else if (!hasDrawn) {
-                clearCanvas();
-            }
-        });
-        
+
+        // Save drawing button
+        saveDrawingBtn.addEventListener('click', saveDrawing);
+
+        // Clear gallery button
         clearGalleryBtn.addEventListener('click', clearGallery);
-        
-        // Canvas event listeners
+
+        // Canvas event listeners for both mouse and touch
         canvas.addEventListener('mousedown', startDrawing);
         canvas.addEventListener('mousemove', draw);
         canvas.addEventListener('mouseup', stopDrawing);
         canvas.addEventListener('mouseout', stopDrawing);
-        
-        // Touch events for mobile
-        canvas.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            startDrawing(e.touches[0]);
-        });
-        
-        canvas.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            draw(e.touches[0]);
-        });
-        
+
+        canvas.addEventListener('touchstart', startDrawing, { passive: false });
+        canvas.addEventListener('touchmove', draw, { passive: false });
         canvas.addEventListener('touchend', stopDrawing);
-        
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            // Save current drawing if exists
-            let currentDrawing = null;
-            if (hasDrawn) {
-                currentDrawing = canvas.toDataURL('image/png');
-            }
-            
-            // Resize canvas
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-            
-            // Redraw if there was a drawing
-            if (currentDrawing) {
-                const img = new Image();
-                img.onload = () => {
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                };
-                img.src = currentDrawing;
-            } else {
-                clearCanvas();
-            }
-        });
-        
-        // Initialize the app
+
+        // ========== INITIALIZE APP ==========
         function initApp() {
             initDrawingTools();
-            loadDrawings();
-            updateTimerDisplay();
+            loadGallery();
+            showScreen('homeScreen');
+            
+            // Pre-select a random prompt on load
+            currentPromptEl.textContent = prompts[Math.floor(Math.random() * prompts.length)];
         }
-        
-        // Start the app
-        initApp();
+
+        // Start the app when page loads
+        window.addEventListener('load', initApp);
     </script>
 </body>
 </html>
